@@ -22,7 +22,6 @@ import models.cifar as models
 
 from utils import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
 
-
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
     and callable(models.__dict__[name]))
@@ -220,6 +219,8 @@ def main():
                 'best_acc': best_acc,
                 'optimizer' : optimizer.state_dict(),
             }, is_best, checkpoint=args.checkpoint)
+        if (epoch+1)%30==0 or epoch==0 or epoch==9 or epoch==19:
+            os.rename('checkpoints/cifar100/densenet-bc-100-12/checkpoint.pth.tar','checkpoints/cifar100/densenet-bc-100-12/checkpoint{}.pth.tar'.format(epoch))
 
     logger.close()
     logger.plot()
@@ -245,7 +246,7 @@ def train(trainloader, model, criterion, optimizer, epoch, use_cuda):
         data_time.update(time.time() - end)
 
         if use_cuda:
-            inputs, targets = inputs.cuda(), targets.cuda(async=True)
+            inputs, targets = inputs.cuda(), targets.cuda(non_blocking=True)
         inputs, targets = torch.autograd.Variable(inputs), torch.autograd.Variable(targets)
 
         # compute output
@@ -254,9 +255,9 @@ def train(trainloader, model, criterion, optimizer, epoch, use_cuda):
 
         # measure accuracy and record loss
         prec1, prec5 = accuracy(outputs.data, targets.data, topk=(1, 5))
-        losses.update(loss.data[0], inputs.size(0))
-        top1.update(prec1[0], inputs.size(0))
-        top5.update(prec5[0], inputs.size(0))
+        losses.update(loss.data, inputs.size(0))
+        top1.update(prec1, inputs.size(0))
+        top5.update(prec5, inputs.size(0))
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
@@ -311,9 +312,9 @@ def test(testloader, model, criterion, epoch, use_cuda):
 
         # measure accuracy and record loss
         prec1, prec5 = accuracy(outputs.data, targets.data, topk=(1, 5))
-        losses.update(loss.data[0], inputs.size(0))
-        top1.update(prec1[0], inputs.size(0))
-        top5.update(prec5[0], inputs.size(0))
+        losses.update(loss.data, inputs.size(0))
+        top1.update(prec1, inputs.size(0))
+        top5.update(prec5, inputs.size(0))
 
         # measure elapsed time
         batch_time.update(time.time() - end)
