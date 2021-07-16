@@ -1,4 +1,6 @@
-# pytorch-classification
+**This repository was forked and updated for use in another project.**
+
+## pytorch-classification
 Classification on CIFAR-10/100 and ImageNet with PyTorch.
 
 ## Features
@@ -68,7 +70,3 @@ Since the size of images in CIFAR dataset is `32x32`, popular network structures
 - [x] All models in `torchvision.models` (alexnet, vgg, resnet, densenet, inception_v3, squeezenet)
 - [x] [ResNeXt](https://arxiv.org/abs/1611.05431)
 - [ ] [Wide Residual Networks](http://arxiv.org/abs/1605.07146)
-
-
-## Contribute
-Feel free to create a pull request if you find any bugs or you want to contribute (e.g., more datasets and more network structures).
